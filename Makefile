@@ -1,4 +1,4 @@
-# Makefile for shell_min
+# Makefile for SLSHELL
 
 TARGET = SLSHELL
 SRC = SLSHELL.c
@@ -10,14 +10,14 @@ all: $(TARGET)
 $(TARGET): $(SRC)
 	$(CC) $(CFLAGS) -o $(TARGET) $(SRC)
 
-strip: shell_min
-	strip shell_min
+strip: SLSHELL
+	strip SLSHELL
 
 install: $(TARGET)
-	install -m 0755 $(TARGET) /usr/local/bin/$(TARGET)
+	install -m 0755 $(TARGET) /usr/bin/$(TARGET)
 
 uninstall:
-	rm -f /usr/local/bin/$(TARGET)
+	rm -f /usr/bin/$(TARGET)
 
 clean:
 	rm -f $(TARGET)
