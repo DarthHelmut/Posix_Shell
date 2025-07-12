@@ -1,7 +1,4 @@
-# Posix_Shell
-
-Some goals of this shell is Suckless model of less then 2000 SOL and using 2mb or less of ram
-
+# SLSHELL
 
 
 
