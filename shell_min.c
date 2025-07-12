@@ -231,7 +231,17 @@ int main() {
     while (1) {
         getcwd(cwd, sizeof(cwd));
         char prompt[160];
-        snprintf(prompt, sizeof(prompt), "[%s] $ ", cwd);
+
+
+
+char* user = getenv("USER");
+char hostname[64];
+gethostname(hostname, sizeof(hostname));
+snprintf(prompt, sizeof(prompt), " \033[1;34m[%s]\033[0m \033[1;35m(%s)\033[0m $ ", user, hostname, cwd);
+
+
+
+
         input = readline(prompt);
         if (!input) break;
         if (strlen(input) == 0) {
