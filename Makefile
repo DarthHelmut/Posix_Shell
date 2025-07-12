@@ -1,7 +1,7 @@
 # Makefile for shell_min
 
-TARGET = shell_min
-SRC = shell_min.c
+TARGET = SLSHELL
+SRC = SLSHELL.c
 CC = gcc
 CFLAGS = -Wall -Wextra -O2 -s -lreadline
 
