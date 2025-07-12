@@ -14,6 +14,8 @@
 #define MAX_CMDS 8
 #define MAX_JOBS 16
 
+int execute_control_block(const char* input);
+
 typedef struct {
     pid_t pid;
     char cmd[MAX_INPUT];
@@ -244,6 +246,14 @@ int main() {
         free(input);
         input = expanded;
 
+
+	// Control block check
+	if (execute_control_block(input) == 0) {
+ 	free(input);
+    	continue;
+	}
+
+
         char* segments[MAX_CMDS];
         int seg_count = split_logic(input, segments);
         for (int i = 0; i < seg_count; i++) {
@@ -254,5 +264,53 @@ int main() {
     }
 
     return 0;
+}
+
+int execute_control_block(const char* input) {
+    if (strncmp(input, "if ", 3) == 0) {
+        // Very simple tokenizer (for now)
+        char condition[MAX_INPUT] = {0};
+        char then_block[MAX_INPUT] = {0};
+        char else_block[MAX_INPUT] = {0};
+
+        const char* then_ptr = strstr(input, "then");
+        const char* else_ptr = strstr(input, "else");
+        const char* fi_ptr   = strstr(input, "fi");
+
+        if (!then_ptr || !fi_ptr) {
+            fprintf(stderr, "Syntax error: missing 'then' or 'fi'\n");
+            return 1;
+        }
+
+        strncpy(condition, input + 3, then_ptr - (input + 3));
+        condition[then_ptr - (input + 3)] = '\0';
+
+        if (else_ptr) {
+            strncpy(then_block, then_ptr + 4, else_ptr - (then_ptr + 4));
+            then_block[else_ptr - (then_ptr + 4)] = '\0';
+            strncpy(else_block, else_ptr + 4, fi_ptr - (else_ptr + 4));
+            else_block[fi_ptr - (else_ptr + 4)] = '\0';
+        } else {
+            strncpy(then_block, then_ptr + 4, fi_ptr - (then_ptr + 4));
+            then_block[fi_ptr - (then_ptr + 4)] = '\0';
+        }
+
+        // Trim and execute condition
+        char* cond_trim = expand_variables(condition);
+        int status = execute_segment(cond_trim);
+        free(cond_trim);
+
+        if (status == 0) {
+            char* then_trim = expand_variables(then_block);
+            execute_segment(then_trim);
+            free(then_trim);
+        } else if (else_ptr) {
+            char* else_trim = expand_variables(else_block);
+            execute_segment(else_trim);
+            free(else_trim);
+        }
+        return 0;
+    }
+    return -1; // Not a control block
 }
 
